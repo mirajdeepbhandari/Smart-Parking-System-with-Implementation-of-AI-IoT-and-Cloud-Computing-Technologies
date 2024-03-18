@@ -1,0 +1,62 @@
+#include <Servo.h>
+
+Servo gateServo;  // create servo object to control the gate
+int gatePin = 9;   // Pin for the gate servo
+
+const int irSensor1 = 2;  // Pin for IR sensor 1
+const int irSensor2 = 3;  // Pin for IR sensor 2
+const int irSensor3 = 4;  // Pin for IR sensor 3
+const int irSensor4 = 5;  // Pin for IR sensor 4
+
+const int led1 = 6;  // Pin for LED 1
+const int led2 = 7;  // Pin for LED 2
+const int led3 = 8;  // Pin for LED 3
+const int led4 = 10; // Pin for LED 4
+
+void setup() {
+  gateServo.attach(gatePin);
+  pinMode(irSensor1, INPUT);
+  pinMode(irSensor2, INPUT);
+  pinMode(irSensor3, INPUT);
+  pinMode(irSensor4, INPUT);
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
+  pinMode(led4, OUTPUT);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    char command = Serial.read();
+
+    // Perform different actions based on the received command
+    if (command == '1') {
+      openGate(); // Open the gate for 5 seconds
+    }
+  }
+
+  // Check IR sensors and control LEDs
+  checkIRSensor(irSensor1, led1);
+  checkIRSensor(irSensor2, led2);
+  checkIRSensor(irSensor3, led3);
+  checkIRSensor(irSensor4, led4);
+}
+
+void openGate() {
+  gateServo.write(180);  // Open the gate
+  delay(5000);           // Wait for 5 seconds
+  gateServo.write(0);    // Close the gate
+}
+
+void checkIRSensor(int sensorPin, int ledPin) {
+  int sensorValue = digitalRead(sensorPin);
+
+  // If the IR sensor detects an object, turn on the LED
+  if (sensorValue == HIGH) {
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
+}
